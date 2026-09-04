@@ -2,6 +2,8 @@
 
 A clean, modern, and responsive full-stack task management web application built with **Python (Flask)**, **SQLAlchemy**, and **MySQL (Local & TiDB Cloud)**, featuring progressive enhancement, auto-expanding UI, and smart date tracking.
 
+<img width="1917" height="970" alt="image" src="https://github.com/user-attachments/assets/6d364c1f-ac65-4e0d-a70d-53e7b38c2e44" />
+
 ---
 
 ## ✨ Features
