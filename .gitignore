@@ -1,0 +1,27 @@
+# Virtual Environment
+env/
+venv/
+ENV/
+.venv/
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment Variables & Secrets
+.env
+.env.local
+
+# Database files
+*.sqlite
+*.db
+instance/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+
+# Vercel
+.vercel/

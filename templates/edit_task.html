@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Task | Tasks{% endblock %}
+
+{% block content %}
+<header class="app-header">
+  <h1 class="app-title">Edit Task</h1>
+  <a href="{{ url_for('index') }}" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+    Cancel
+  </a>
+</header>
+
+<div class="form-card">
+  <form method="POST" action="{{ url_for('edit_task', task_id=task.id) }}">
+    
+    <div class="form-group">
+      <label class="form-label" for="taskTitle">Title</label>
+      <input
+        type="text"
+        id="taskTitle"
+        name="title"
+        class="input-text"
+        value="{{ task.title if task is defined else '' }}"
+        required
+        autocomplete="off"
+        spellcheck="false"
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="taskDesc">Description</label>
+      <textarea
+        id="taskDesc"
+        name="description"
+        class="input-textarea"
+        placeholder="Optional notes or details..."
+      >{{ task.description if task is defined and task.description else '' }}</textarea>
+    </div>
+
+    <div class="form-row form-group">
+      <div>
+        <label class="form-label" for="taskCategory">Category</label>
+        <input
+          type="text"
+          id="taskCategory"
+          name="category"
+          class="input-text"
+          placeholder="e.g. Work, Study"
+          value="{{ task.category if task is defined and task.category else '' }}"
+        >
+      </div>
+
+      <div>
+        <label class="form-label" for="taskDueDate">Due Date</label>
+        <input
+          type="date"
+          id="taskDueDate"
+          name="due_date"
+          class="input-text"
+          value="{{ task.due_date.strftime('%Y-%m-%d') if task is defined and task.due_date is not string and task.due_date and task.due_date.strftime is defined else (task.due_date if task is defined and task.due_date else '') }}"
+        >
+        <div class="date-presets">
+          <button type="button" class="date-preset-btn" data-days="0" data-for="taskDueDate">Today</button>
+          <button type="button" class="date-preset-btn" data-days="1" data-for="taskDueDate">Tomorrow</button>
+          <button type="button" class="date-preset-btn" data-days="7" data-for="taskDueDate">Next Week</button>
+          <button type="button" class="date-preset-btn" data-days="clear" data-for="taskDueDate">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row form-group">
+      <div>
+        <label class="form-label" for="taskPriority">Priority</label>
+        <select id="taskPriority" name="priority" class="input-select">
+          <option value="Low" {% if task is defined and task.priority == 'Low' %}selected{% endif %}>Low</option>
+          <option value="Medium" {% if task is defined and task.priority == 'Medium' %}selected{% endif %}>Medium</option>
+          <option value="High" {% if task is defined and task.priority == 'High' %}selected{% endif %}>High</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label" for="taskStatus">Status</label>
+        <select id="taskStatus" name="status" class="input-select">
+          <option value="Pending" {% if task is defined and task.status == 'Pending' %}selected{% endif %}>Pending</option>
+          <option value="Completed" {% if task is defined and task.status == 'Completed' %}selected{% endif %}>Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('index') }}" class="btn-secondary">Back</a>
+      <button type="submit" class="btn-primary">Save Changes</button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}
