@@ -24,7 +24,7 @@ A clean, modern, and responsive full-stack task management web application built
 
 - **Backend**: Python 3.10+, Flask 3.x, Flask-SQLAlchemy 3.x, SQLAlchemy 2.0
 - **Database**: MySQL (Local MySQL Server / TiDB Cloud Serverless MySQL)
-- **Database Driver**: PyMySQL & Cryptography
+- **Database Driver**: PyMySQL (Pure Python MySQL client with SSL support)
 - **Frontend**: HTML5, Jinja2 Templates, Vanilla CSS3 (CSS Variables), Vanilla JavaScript (Fetch API)
 - **Server / WSGI**: Gunicorn
 
@@ -34,6 +34,8 @@ A clean, modern, and responsive full-stack task management web application built
 
 ```text
 Flask Practice/
+├── api/
+│   └── index.py          # Serverless WSGI entrypoint & path handler
 ├── static/
 │   ├── app.js            # Client-side progressive enhancement & UI interactions
 │   └── style.css         # Minimalist responsive styling (dark & light themes)
@@ -55,7 +57,7 @@ Flask Practice/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git clone https://github.com/mrtnriel/note-app.git
 cd "Flask Practice"
 ```
 
