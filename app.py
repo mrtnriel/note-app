@@ -26,6 +26,11 @@ database_url = os.environ.get("DATABASE_URL", 'mysql+pymysql://root:Password@loc
 if database_url.startswith("mysql://") and not database_url.startswith("mysql+pymysql://"): # ensures PyMySQL driver is used
     database_url = database_url.replace("mysql://", "mysql+pymysql://", 1)
 
+# SSL configuration for TiDB Cloud
+connect_args = {}
+if "tidbcloud.com" in database_url:
+    connect_args = {"ssl": {"ssl_mode": "REQUIRED"}}
+
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False # Disables overhead tracking modifications
 
@@ -33,6 +38,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False # Disables overhead trackin
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_pre_ping": True,
     "pool_recycle": 280,
+    "connect_args": connect_args
 }
 
 db = SQLAlchemy(app) # Create the database itself
@@ -271,14 +277,24 @@ def delete_task(task_id):
 
     return redirect(request.referrer or url_for('index'))
 
-# Auto-create database tables on startup
-with app.app_context():
-    try:
-        db.create_all()
-    except Exception as e:
-        print(f"Database setup notice: {e}")
+# Global error handler to print tracebacks cleanly
+@app.errorhandler(Exception)
+def handle_error(e):
+    import traceback
+    err_trace = traceback.format_exc()
+    print(f"Flask Application Exception:\n{err_trace}")
+    return f"<h2>Application Error</h2><pre style='background:#18181b;color:#f4f4f5;padding:1rem;border-radius:8px;'>{err_trace}</pre>", 500
 
-# Runner & Debugger
+# WSGI Handler for Vercel Serverless
+handler = app
+
+# Runner & Debugger for local execution
 if __name__ == "__main__":
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception as e:
+            print(f"Local database table setup notice: {e}")
+
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)

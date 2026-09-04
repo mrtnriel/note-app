@@ -2,12 +2,13 @@
   "version": 2,
   "builds": [
     {
-      "src": "app.py",
+      "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
         "includeFiles": [
           "templates/**",
-          "static/**"
+          "static/**",
+          "app.py"
         ]
       }
     }
@@ -19,7 +20,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "app.py"
+      "dest": "/api/index.py"
     }
   ]
 }
