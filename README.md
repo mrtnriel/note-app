@@ -1,6 +1,6 @@
 # 📋 Flask Task Manager
 
-A clean, modern, and responsive full-stack task management web application built with **Python (Flask)**, **SQLAlchemy**, and **MySQL / TiDB Cloud**, featuring progressive enhancement, auto-expanding UI, smart date tracking, and seamless deployment on **Vercel**.
+A clean, modern, and responsive full-stack task management web application built with **Python (Flask)**, **SQLAlchemy**, and **MySQL (Local & TiDB Cloud)**, featuring progressive enhancement, auto-expanding UI, and smart date tracking.
 
 ---
 
@@ -17,17 +17,16 @@ A clean, modern, and responsive full-stack task management web application built
   - Press `/` or `N` to jump straight to task creation.
   - Press `Esc` to collapse the drawer.
 - **🔔 Auto-Dismissing Alerts**: Toast notifications with smooth exit animations and manual dismiss controls.
-- **🌐 Serverless & Cloud Ready**: Fully configured for instant deployment on **Vercel** with **TiDB Cloud (Serverless MySQL)**.
 
 ---
 
 ## 🛠️ Tech Stack
 
 - **Backend**: Python 3.10+, Flask 3.x, Flask-SQLAlchemy 3.x, SQLAlchemy 2.0
-- **Database**: MySQL / TiDB Cloud (Serverless MySQL) / PostgreSQL / SQLite
+- **Database**: MySQL (Local MySQL Server / TiDB Cloud Serverless MySQL)
 - **Database Driver**: PyMySQL & Cryptography
 - **Frontend**: HTML5, Jinja2 Templates, Vanilla CSS3 (CSS Variables), Vanilla JavaScript (Fetch API)
-- **Deployment**: Vercel (`@vercel/python`), Gunicorn
+- **Server / WSGI**: Gunicorn
 
 ---
 
@@ -77,45 +76,19 @@ cd "Flask Practice"
 pip install -r requirements.txt
 ```
 
-### 4. Configure Database
-By default, the app connects to a local MySQL instance or TiDB Cloud via the `DATABASE_URL` environment variable.
+### 4. Configure MySQL Database
+Ensure your MySQL server is running and create the database:
+```sql
+CREATE DATABASE my_flask_db;
+```
 
-- **Option A (Local MySQL)**: Ensure your local MySQL server is running and create the database:
-  ```sql
-  CREATE DATABASE my_flask_db;
-  ```
-- **Option B (SQLite for Quick Testing)**: Set `DATABASE_URL=sqlite:///tasks.db` in your environment.
+*(Optional: If connecting to TiDB Cloud locally, set the `DATABASE_URL` environment variable to your TiDB connection string).*
 
 ### 5. Run the Application
 ```bash
 python app.py
 ```
 Open your browser and navigate to: **`http://127.0.0.1:5000`**
-
----
-
-## 🌐 Deploying to Vercel
-
-This repository includes a pre-configured `vercel.json` file for single-click serverless deployment on **Vercel**.
-
-1. **Push your code to GitHub**:
-   ```bash
-   git add .
-   git commit -m "Ready for deployment"
-   git push origin main
-   ```
-
-2. **Import Project in Vercel**:
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard) → **Add New Project**.
-   - Select your GitHub repository.
-
-3. **Set Environment Variables**:
-   Under **Settings** → **Environment Variables**, add:
-   - `DATABASE_URL`: `mysql+pymysql://<USER>:<PASSWORD>@<HOST>:4000/<DB_NAME>?ssl_verify_cert=true&ssl_verify_identity=true`
-   - `SECRET_KEY`: *[Any random secret string]*
-
-4. **Deploy**:
-   - Click **Deploy**. Vercel will build the serverless functions and host your app with global CDN caching for static files.
 
 ---
 

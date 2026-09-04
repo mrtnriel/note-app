@@ -12,19 +12,28 @@ from flask import jsonify # sends JSON responses for smooth background/AJAX requ
 from datetime import datetime, timezone, date # specific tools to format and manipulate dates and times in Python.
 
 # My App
-app = Flask(__name__)
+base_dir = os.path.abspath(os.path.dirname(__file__))
+app = Flask(
+    __name__,
+    template_folder=os.path.join(base_dir, "templates"),
+    static_folder=os.path.join(base_dir, "static")
+)
 app.secret_key = os.environ.get("SECRET_KEY", "flask_task_app_secret_key") # secret key required to securely handle sessions and flash messages
 
 # Configure the App (visit flask-sqlalchemy for setup)
 # Uses DATABASE_URL environment variable if deployed to cloud, otherwise defaults to local MySQL
 database_url = os.environ.get("DATABASE_URL", 'mysql+pymysql://root:Password@localhost/my_flask_db')
-if database_url.startswith("postgres://"): # fixes compatibility for PostgreSQL cloud providers
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
-elif database_url.startswith("mysql://") and not database_url.startswith("mysql+pymysql://"): # ensures PyMySQL driver is used
+if database_url.startswith("mysql://") and not database_url.startswith("mysql+pymysql://"): # ensures PyMySQL driver is used
     database_url = database_url.replace("mysql://", "mysql+pymysql://", 1)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False # Disables overhead tracking modifications
+
+# Serverless connection pool settings (reconnects automatically on dropped/idle connections)
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 280,
+}
 
 db = SQLAlchemy(app) # Create the database itself
 
@@ -66,21 +75,30 @@ def inject_today():
 # / homepage - See all current tasks (with filter support)
 @app.route("/")
 def index():
-    # Filter tasks based on URL query parameter (e.g. /?filter=active or /?filter=completed)
     filter_type = request.args.get('filter', 'all')
     
-    query = Task.query
-    if filter_type == 'active':
-        query = query.filter_by(status='Pending')
-    elif filter_type == 'completed':
-        query = query.filter_by(status='Completed')
-    
-    tasks = query.order_by(Task.created.desc()).all()
-
-    # Calculate global task counts for the header statistics
-    total_count = Task.query.count()
-    completed_count = Task.query.filter_by(status='Completed').count()
-    pending_count = total_count - completed_count
+    try:
+        query = Task.query
+        if filter_type == 'active':
+            query = query.filter_by(status='Pending')
+        elif filter_type == 'completed':
+            query = query.filter_by(status='Completed')
+        
+        tasks = query.order_by(Task.created.desc()).all()
+        total_count = Task.query.count()
+        completed_count = Task.query.filter_by(status='Completed').count()
+        pending_count = total_count - completed_count
+    except Exception as e:
+        # Auto-recover by creating tables if they don't exist yet
+        try:
+            db.create_all()
+            tasks = Task.query.order_by(Task.created.desc()).all()
+            total_count = len(tasks)
+            completed_count = sum(1 for t in tasks if t.status == 'Completed')
+            pending_count = total_count - completed_count
+        except Exception as inner_e:
+            print(f"Database Error: {inner_e}")
+            return f"Database Error: {inner_e}. Please check your DATABASE_URL on Vercel.", 500
 
     return render_template(
         "index.html",
