@@ -80,6 +80,8 @@ def inject_today():
 
 # / homepage - See all current tasks (with filter support)
 @app.route("/")
+@app.route("/api")
+@app.route("/api/index")
 def index():
     filter_type = request.args.get('filter', 'all')
     
@@ -117,6 +119,8 @@ def index():
 
 # Add Task / New Task Object (Handles both Quick Add on homepage and full form on add_task.html)
 @app.route("/add", methods=['GET', 'POST'])
+@app.route("/api/add", methods=['GET', 'POST'])
+@app.route("/api/index/add", methods=['GET', 'POST'])
 def add_task():
     if request.method == 'POST':
         # Retrieve form data sent by the user (supports both form data and JSON data)
@@ -184,6 +188,8 @@ def add_task():
 
 # Toggle Task Status (Pending <-> Completed)
 @app.route("/toggle/<int:task_id>", methods=['POST'])
+@app.route("/api/toggle/<int:task_id>", methods=['POST'])
+@app.route("/api/index/toggle/<int:task_id>", methods=['POST'])
 def toggle_task(task_id):
     task = db.get_or_404(Task, task_id)
     task.status = 'Completed' if task.status == 'Pending' else 'Pending'
@@ -213,6 +219,8 @@ def toggle_task(task_id):
 
 # Edit Task (Load edit form and save updated task data)
 @app.route("/edit/<int:task_id>", methods=['GET', 'POST'])
+@app.route("/api/edit/<int:task_id>", methods=['GET', 'POST'])
+@app.route("/api/index/edit/<int:task_id>", methods=['GET', 'POST'])
 def edit_task(task_id):
     task = db.get_or_404(Task, task_id)
 
@@ -249,6 +257,8 @@ def edit_task(task_id):
 
 # Delete Task from database
 @app.route("/delete/<int:task_id>", methods=['POST'])
+@app.route("/api/delete/<int:task_id>", methods=['POST'])
+@app.route("/api/index/delete/<int:task_id>", methods=['POST'])
 def delete_task(task_id):
     task = db.get_or_404(Task, task_id)
     try:
